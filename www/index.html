@@ -15,25 +15,6 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
     </script>
-    <script>
-        var room = getParameterByName('room') || 'test';
-        var host = {host: 'whoami.kr', port: 443, path: '/facechat'};
-        var peer = new Peer(room, host);
-        var isHost = peer.id === room;
-        peer.on('open', function(id) {
-            App.init();
-            console.log('init');
-        });
-        peer.on('error', function(id) {
-            if (isHost) {
-                var randId = +new Date + '' + Math.random();
-                peer = new Peer(randId.replace('.',''), host);
-                isHost = false;
-                App.init();
-                console.log('err');
-            }
-        });
-    </script>
 </head>
 <body>
 <div class="wrapper">
@@ -71,5 +52,24 @@
 <script type="text/javascript" src="fdlib/scripts/face.js"></script>
 <script type="text/javascript" src="fdlib/scripts/scripts.js"></script>
 <script type="text/javascript" src="fdlib/scripts/stackblur.js"></script>
+<script>
+    var room = getParameterByName('room') || 'test';
+    var host = {host: 'whoami.kr', port: 443, path: '/facechat'};
+    var peer = new Peer(room, host);
+    var isHost = peer.id === room;
+    peer.on('open', function(id) {
+        App.init();
+        console.log('init');
+    });
+    peer.on('error', function(id) {
+        if (isHost) {
+            var randId = +new Date + '' + Math.random();
+            peer = new Peer(randId.replace('.',''), host);
+            isHost = false;
+            App.init();
+            console.log('err');
+        }
+    });
+</script>
 </body>
 </html>
