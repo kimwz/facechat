@@ -17,7 +17,7 @@
     </script>
     <script>
         var room = getParameterByName('room') || 'test';
-        var host = {host: 'whoami.kr', port: 9000, path: '/facechat'};
+        var host = {host: 'whoami.kr', port: 443, path: '/facechat'};
         var peer = new Peer(room, host);
         var isHost = peer.id === room;
         peer.on('open', function(id) {
