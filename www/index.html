@@ -3,25 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <link rel="stylesheet" href="fdlib/style.css"/>
     <script src="peerjs/dist/peer.js"></script>
     <script>
-        var key = location.hash ? location.hash.substr(1) : Math.random();
-        var peer = new Peer(key, {host: '40.74.122.12', port: 9000, path: '/facechat'});
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+    </script>
+    <script>
+        var room = getParameterByName('room') || 'test';
+        var host = {host: 'whoami.kr', port: 9000, path: '/facechat'};
+        var peer = new Peer(room, host);
+        var isHost = peer.id === room;
+        peer.on('open', function(id) {
+            App.init();
+            console.log('init');
+        });
+        peer.on('error', function(id) {
+            if (isHost) {
+                var randId = +new Date + '' + Math.random();
+                peer = new Peer(randId.replace('.',''), host);
+                isHost = false;
+                App.init();
+                console.log('err');
+            }
+        });
     </script>
 </head>
 <body>
 <div class="wrapper">
     <!-- Our Main Video Element -->
-    <video height="426" width="640" id="myvideo" controls autoplay="true" style="width:100px; height:75px;"></video>
-    <video height="426" width="640" id="remotevideo" controls autoplay="true" style="width:100px; height:75px;"></video>
-    <a href="#" onclick="App.start('glasses');">Glasses!</a>
-    <a href="#" onclick="App.start('blur');">blur!</a>
-    <a href="#" onclick="App.start('hipster');">hipster!</a>
-    <a href="#" onclick="App.start('greenscreen');">greenscreen!</a>
+    <video id="myvideo" controls autoplay="true" style="display:none;"></video>
+    <video id="remotevideo" controls autoplay="true" style="display:none"></video>
+    <a href="#" onclick="App.startLocalEffect('glasses');">Glasses!</a>
+    <a href="#" onclick="App.startLocalEffect('blur');">blur!</a>
+    <a href="#" onclick="App.startLocalEffect('hipster');">hipster!</a>
+    <a href="#" onclick="App.startLocalEffect('greenscreen');">greenscreen!</a>
     <br>
     <!-- Out Canvas Element for output -->
-    <canvas id="output"  height="426" width="515" ></canvas>
+    <canvas id="output"  height="426" width="515" style="z-index:5;position:absolute;left:0px;top:30px;border:1px solid;"></canvas>
+    <canvas id="outputMe"  height="130" width="130" style="z-index:10;position:absolute;left:380px;top:320px;border:1px solid;" ></canvas>
 
     <div class="colours" style="display:none;">
         <div id="red">
